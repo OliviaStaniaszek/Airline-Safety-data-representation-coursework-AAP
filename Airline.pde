@@ -13,6 +13,8 @@ class Airline {
   int graphLeft;
   int graphRight;
   
+  int topVal;
+  
   //line collision
   float startX;
   float startY;
@@ -103,11 +105,9 @@ class Airline {
     return false;
   }
   
-  void drawBar (int page, int topVal,int i){
-    rotate(0);
+  float[] mapBar (int page, int topVal){
     int bar85 = 0;
     int bar00 = 0;
-    int w = 10; //width of bar
     if (page == 1){
       bar85 = inc85;
       bar00 = inc00;
@@ -120,6 +120,16 @@ class Airline {
     }
     float bar1 = map(bar85, 0, topVal, 0, graphBase-graphTop);
     float bar2 = map(bar00, 0, topVal, 0, graphBase-graphTop);
+    float [] bars = new float[2];
+    bars[0] = bar1;
+    bars[1] = bar2;
+    return bars;
+  }
+  void drawBar (int page, int topVal,int i){
+    float[] bars = mapBar(page,topVal);
+    float bar1 = bars[0];
+    float bar2 = bars[1];
+    int w = 10; //width of bar
     noStroke();
     fill(hue,60,90);
     rect(15 + graphLeft+(i*30),graphBase-bar1/2,w,bar1);
@@ -128,18 +138,20 @@ class Airline {
     
   }
   
-  //void drawBarText(int i){
-  //  //println("TEST - draw bar text");
-  //  fill(0,0,99);
-  //  rotate(radians(270));
-  //  textAlign(CENTER,CENTER);
-  //  //translate(graphLeft+100,graphBase +200);
-  //  //rotate(HALF_PI);
-  //  text(n,20 + graphLeft+(i*100)-200,graphBase + 20*i);
-  //  //text(n,0,0);
-
-  //  rotate(radians(-270));
+  //Boolean barCollision(int page, int i){
+  //  float[] bars = mapBar(page,topVal);
+  //  float bar1 = bars[0];
+  //  float bar2 = bars[1];
+  //  //int w = 10//width of bar
+  //  Boolean hit = false;
+  //  if (mouseX > (15 + graphLeft+(i*30))-5 && mouseX < (15 + graphLeft+(i*30))+ 5){
+  //    if(mouseY < (graphBase-bar1/2) && (mouseY > bar1 || mouseY  > bar2)){
+  //      println("TEST - bar collision "+n);
+  //    }
+  //  }
+  // return hit;
   //}
+  
   
   
   void drawLegend(int i, int j){
@@ -171,11 +183,36 @@ class Airline {
     }
   }
   
-  void drawInfoBox(){
+  void drawBarLabel(int i){
+    fill(bColour);
+    textSize(15);
+    if (n.length() > 19){
+      textSize(10);
+    } else if(n.length() > 15){
+      textSize(13);
+    } else if(n.length() > 10){
+      textSize(14);
+    }
+    float x = 25 + graphLeft+(i*30);
+    float y = graphBase+15;
+    textAlign(RIGHT);
+    pushMatrix();
+    translate(x,y);
+    rotate(-QUARTER_PI);
+    text(n,0,0);
+    popMatrix();
+  }
+  
+  void drawInfoBox(Boolean lineGraph){
+    textAlign(CENTER);
     noStroke();
-    int xPos = mouseX-100;
-    if (mouseX <width/2) xPos = mouseX+100;
-    int yPos = mouseY-50;
+    int xPos = width/2;
+    int yPos = height/2;
+    if (lineGraph){
+      xPos = mouseX-100;
+      if (mouseX <width/2) xPos = mouseX+100;
+      yPos = mouseY-50;
+    }
     if (selected){
       xPos = selectedX;
       yPos = selectedY;
@@ -201,7 +238,7 @@ class Airline {
   
   void deselect(){
     if (selected){
-      println("TEST - deselect "+n);
+      //println("TEST - deselect "+n);
       selected = false; 
     }
   }

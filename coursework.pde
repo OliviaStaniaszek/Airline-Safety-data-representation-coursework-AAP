@@ -2,11 +2,12 @@ Table table;
 int currentPage;
 int prevPage;
 color bkg;
+PFont myFont;
 
 Airline[] airlineAr = new Airline[33];
 
 //buttons
-int noofbuttons = 9;
+int noofbuttons = 10;
 Boolean [] bHover = new Boolean[noofbuttons];
 Boolean [] bClick = new Boolean[noofbuttons];
 int [] bCPage = new int[noofbuttons];
@@ -15,6 +16,8 @@ int [] bX = new int[noofbuttons];
 int [] bY = new int [noofbuttons];
 int [] bW = new int [noofbuttons];
 int [] bH = new int [noofbuttons];
+String [] bText = new String [noofbuttons];
+int [] bSize = new int [noofbuttons];
 color bColour;
 color bAltColour;
 
@@ -29,6 +32,9 @@ Boolean selectionOnly;
 
 
 void setup() {
+  smooth(2);
+  myFont = createFont("Trebuchet MS", 15);
+  textFont(myFont);
   size(1200, 800);
   currentPage = 0;
   prevPage = 0;
@@ -36,7 +42,7 @@ void setup() {
   noStroke();
   textAlign(CENTER);
   rectMode(CENTER);
-  bkg = color(197, 100, 10);
+  bkg = color(230, 40, 12);
   graphBase = height - 100;
   graphTop = 100;
   graphLeft = 100;
@@ -50,8 +56,6 @@ void setup() {
   widthASK = true;
   selectionOnly = false;
   table=loadTable("airlineSafety.csv", "header");// if the data has a header row, use "header"
-  //table.setColumnType(1, Table.INT);
-  //table.sort(1);
   int rows = table.getRowCount();
   println(rows + " total rows in table");
 
@@ -92,11 +96,12 @@ void setup() {
     bY[i] = height/2;
     bW[i] = 340;
     bH[i] = 60;
+    bText[i] = "";
+    bSize[i] = 15;
   }
 }
 
 void draw() {
-  //println("TEST - lineGraph",lineGraph);
   if (currentPage == 0) {
     menuPage();
   } else if (currentPage == 1) {
@@ -105,8 +110,9 @@ void draw() {
     fatalAccidentsPage();
   } else if (currentPage == 3) {
     fatalitiesPage();
-  } 
-  //println("TEST - current page",currentPage);
+  } else if (currentPage == 4) {
+    infoPage();
+  }
 
   for (int i = 0; i<noofbuttons; i++) { //button collisions
     if (mouseX < bX[i] + bW[i]/2 && mouseX > bX[i] - bW[i]/2) {
@@ -126,9 +132,16 @@ void draw() {
       boolean hit = airlineAr[i].linePoint();
       boolean selected = airlineAr[i].selected;
       airlineAr[i].legendCollision();
-      if ((hit || selected) && lineGraph) airlineAr[i].drawInfoBox();
+      if ((hit || selected) && lineGraph) airlineAr[i].drawInfoBox(lineGraph);
     }
   }
+  
+  ////bar collision
+  //if (currentPage > 0 && currentPage < 4) {
+  //  for (int i=0; i<table.getRowCount(); i++) {
+  //    Boolean hit = airlineAr[i].barCollision(i);
+  //  }
+  //}
 }
 
 void mousePressed() {
@@ -154,7 +167,7 @@ void mousePressed() {
           break;
           
         case 8:
-          println("TEST - widthASK");
+          //println("TEST - widthASK");
           if (widthASK == true) {
             widthASK = false;
           } else {
@@ -169,7 +182,7 @@ void mousePressed() {
           }
           break;
         case 10:
-          println("TEST - clear button pressed");
+          //println("TEST - clear button pressed");
           for(int j =0; j< table.getRowCount();j++){
             airlineAr[j].deselect();
           }
@@ -184,7 +197,6 @@ void drawButtons(int page) {
   //noStroke();
   strokeWeight(4);
   colorMode(HSB, 360, 100, 100);
-
   for (int i=0; i<noofbuttons; i++) {
     if (bCPage[i] == page) {
       //println("TEST - draw button");
@@ -197,11 +209,25 @@ void drawButtons(int page) {
       }
       rect(bX[i], bY[i], bW[i], bH[i]);
     }
+    int offset = -5;
+    if (page >0){
+      offset = -2;
+    } 
+    textAlign(CENTER, CENTER);
+    if (bCPage[i] == page){
+      if(bHover[i]) fill(bColour);
+      else fill(bAltColour);
+      textSize(bSize[i]);
+      text(bText[i],bX[i],bY[i]+offset);
+      println("TEST - draw text",bText[i]);
+      //drawText(bText[i],40,bX[i],bY[i]+10);
+    }
   }
 }
 
 void drawText(String text, int size, int x, int y) {
-  fill(0, 0, 99);
+  textAlign(CENTER);
+  fill(bColour);
   textSize(size);
   text(text, x, y);
 }
@@ -212,20 +238,34 @@ void menuPage() {
   bCPage[0] = 0;
   bNPage[0] = 1;
   bY[0] = 300;
+  bText[0] = "Incidents";
+  bSize[0] = 40;
 
   bCPage[1] = 0;
   bNPage[1] = 2;
   bY[1] = 400;
+  bText[1] = "Fatal Accidents";
+  bSize[1] = 40;
 
   bCPage[2] = 0;
   bNPage[2] = 3;
   bY[2] = 500;
+  bText[2] = "Fatalities";
+  bSize[2] = 40;
+  
+  bCPage[9] = 0;
+  bNPage[9] = 4;
+  bY[9] = 600;
+  bText[9] = "How to use";
+  bSize[9] = 40;
 
   drawButtons(0);
   drawText("Airline Safety", 80, width/2, 200);
-  drawText("Incidents", 40, bX[0], bY[0]+15);
-  drawText("Fatal Accidents", 40, bX[1], bY[1]+15);
-  drawText("Fatalities", 40, bX[2], bY[2]+15);
+  if (bHover[0] == true) fill(0,0,0);
+  else fill(0,0,99);
+  //drawText("Incidents", 40, bX[0], bY[0]+15);
+  //drawText("Fatal Accidents", 40, bX[1], bY[1]+15);
+  //drawText("Fatalities", 40, bX[2], bY[2]+15);
 }
 
 void drawGraph(int topVal) {
@@ -254,6 +294,24 @@ void drawGraph(int topVal) {
     String temp = str((i*div));
     drawText(temp, 20, graphLeft - 20, int(graphBase-(interval*i)));
   }
+  fill(bColour);
+  float x = graphLeft-40;
+  float y = height/2;
+  textAlign(CENTER,BOTTOM);
+
+  pushMatrix();
+  translate(x,y);
+  rotate(-HALF_PI);
+  text("1985-1999", 0,0);
+  popMatrix();
+  
+  pushMatrix(); 
+  x = graphRight+30;
+  translate(x,y);
+  rotate(-HALF_PI);
+  text("2000-2014", 0,0);
+  popMatrix();
+  textAlign(CENTER);
 }
 
 void drawData(int currentPage, int regTopVal, int altTopVal) {
@@ -263,6 +321,8 @@ void drawData(int currentPage, int regTopVal, int altTopVal) {
   bY[3] = 50;
   bW[3] = 200;
   bH[3] = 50;
+  bText[3] = "Main Menu";
+  bSize[3] = 25;
 
   bCPage[4] = currentPage; //toggle line bar chart button
   bNPage[4] = 6;
@@ -270,6 +330,7 @@ void drawData(int currentPage, int regTopVal, int altTopVal) {
   bY[4] = 50;
   bW[4] = 100; //200;
   bH[4] = 50;
+  bText[4] = "Line/bar\ngraph";
 
   bCPage[5] = currentPage; //zoom button
   bNPage[5] = 7;
@@ -277,6 +338,7 @@ void drawData(int currentPage, int regTopVal, int altTopVal) {
   bY[5] = 50; //105;
   bW[5] = 100; //200;
   bH[5] = 50;
+  bText[5] = "Zoom\nin/out";
 
   bCPage[6] = currentPage; //line width toggle button
   bNPage[6] = 8;
@@ -284,6 +346,7 @@ void drawData(int currentPage, int regTopVal, int altTopVal) {
   bY[6] = 120; //160;
   bW[6] = 100; ///200;
   bH[6] = 50;
+  bText[6] = "Line\nwidth";
   
   bCPage[7] = currentPage; //selected only
   bNPage[7] = 9;
@@ -291,6 +354,7 @@ void drawData(int currentPage, int regTopVal, int altTopVal) {
   bY[7] = 120; //105;
   bW[7] = 100; //200;
   bH[7] = 50;
+  bText[7] = "Selected\nonly";
   
   bCPage[8] = currentPage; //clear selection
   bNPage[8] = 10;
@@ -298,6 +362,8 @@ void drawData(int currentPage, int regTopVal, int altTopVal) {
   bY[8] = 190;
   bW[8] = 100;
   bH[8] = 50;
+  bText[8] = "Clear";
+  bSize[8] = 20;
 
   int topVal;
   for (int i=0; i<table.getRowCount(); i++) {
@@ -312,13 +378,16 @@ void drawData(int currentPage, int regTopVal, int altTopVal) {
     } else {
       //println("TEST - bar chart");
       airlineAr[i].drawBar(currentPage, topVal, i);
+      airlineAr[i].drawBarLabel(i);
     }
   }
   int count = 0;
-  for (int i=0; i<3; i++) { //cols
-    for (int j=0; j<11; j++) { //rowz
-      airlineAr[count].drawLegend(i, j);
-      count ++;
+  if (lineGraph){
+    for (int i=0; i<3; i++) { //cols
+      for (int j=0; j<11; j++) { //rowz
+        airlineAr[count].drawLegend(i, j);
+        count ++;
+      }
     }
   }
   fill(bkg);
@@ -332,12 +401,12 @@ void incidentsPage() { //page 1
   drawData(currentPage, 80, 30);
   drawText("Incidents in 1985 - 1999 vs 2000 - 2014", 30, width/2, 60);
   drawButtons(currentPage);
-  drawText("Main Menu", 30, bX[3], bY[3]+10);
-  drawText("Line/Bar", 20, bX[4], bY[4]+10);
-  drawText("Zoom in/out", 20, bX[5], bY[5]+10);
-  drawText("Line width", 20, bX[6], bY[6]+10);
-  drawText("Selected only", 20, bX[7], bY[7]+10);
-  drawText("Clear", 20, bX[8], bY[8]+10);
+  //drawText("Main Menu", 30, bX[3], bY[3]+10);
+  //drawText("Line/Bar\ngraph", 15, bX[4], bY[4]-5);
+  //drawText("Zoom\nin/out", 15, bX[5], bY[5]-5);
+  //drawText("Line \nwidth", 15, bX[6], bY[6]-5);
+  //drawText("Selected\nonly", 15, bX[7], bY[7]-5);
+  //drawText("Clear", 20, bX[8], bY[8]+10);
 }
 
 void fatalAccidentsPage() { //page 2
@@ -345,19 +414,29 @@ void fatalAccidentsPage() { //page 2
   drawData(currentPage, 20, 10);
   drawText("Fatal Accidents in 1985 - 1999 vs 2000 - 2014", 30, width/2, 60);  
   drawButtons(currentPage);
-  drawText("Main Menu", 30, bX[3], bY[3]+10);
-  drawText("line/bar", 30, bX[4], bY[4]+10);
-  drawText("Zoom in/out", 30, bX[5], bY[5]+10);
-  drawText("Line width", 30, bX[6], bY[6]+10);
+  //drawText("Main Menu", 30, bX[3], bY[3]+10);
+  //drawText("Line/Bar\ngraph", 15, bX[4], bY[4]-5);
+  //drawText("Zoom\nin/out", 15, bX[5], bY[5]-5);
+  //drawText("Line \nwidth", 15, bX[6], bY[6]-5);
+  //drawText("Selected\nonly", 15, bX[7], bY[7]-5);
+  //drawText("Clear", 20, bX[8], bY[8]+10);
 }
 
 void fatalitiesPage() { //page 3
   background(bkg);
-  drawData(currentPage, 540, 300);
+  drawData(currentPage, 600, 300);
   drawText("Fatalities in 1985 - 1999 vs 2000 - 2014", 30, width/2, 60);
   drawButtons(currentPage);
-  drawText("Main Menu", 30, bX[3], bY[3]+10);
-  drawText("line/bar", 30, bX[4], bY[4]+10);
-  drawText("Zoom in/out", 30, bX[5], bY[5]+10);
-  drawText("Line width", 30, bX[6], bY[6]+10);
+  //drawText("Main Menu", 30, bX[3], bY[3]+10);
+  //drawText("Line/Bar\ngraph", 15, bX[4], bY[4]-5);
+  //drawText("Zoom\nin/out", 15, bX[5], bY[5]-5);
+  //drawText("Line \nwidth", 15, bX[6], bY[6]-5);
+  //drawText("Selected\nonly", 15, bX[7], bY[7]-5);
+  //drawText("Clear", 20, bX[8], bY[8]+10);
+}
+
+void infoPage(){ //page 4
+  background(bkg);
+  drawText("How to use", 30, width/2, 60);
+  drawText("This is a data visualisation of 33 different airlines showing how they compared between two\n time frames (1959 to 1999 and 2000 to 2014). There are three different pages which can be navigated to through the main menu. \nThe line graphs show the different in values the slope of the line. The width of the line \nrepresents the (ASK) available seats per kilometre per week (the popularity of the airline) this\n can be toggled on/off using the ‘line width’ button to more clearly see some of the lines. \nTo more easily see some of the lower values, you can click the ‘Zoom in/out’ button which \nwill decrease the range of the y axis, more clearly showing the lower values. \nBy hovering over lines, you can see more information  about the respective airline. By clicking\n a line, this box will stay and then you can click the ‘selected only’ button to show only those\n lines. Press ‘clear’ to clear your selection. You can also select lines by clicking on\n the name in the legend.\nYou can also view the data in bar chart form by clicking the ‘Line/bar graph’ button. ",20,width/2,100);
 }
