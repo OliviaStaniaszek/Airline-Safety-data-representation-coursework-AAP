@@ -88,7 +88,7 @@ class Airline {
     float lineLen = dist(startX, startY, endX, endY); //finds lenght of line
     
     float buffer = 0.5; //higher buffer,less accuracy
-    
+    if (widthASK == false) buffer = 0.1;//more accuracy when showing thin lines
     if(d1+d2 >= lineLen-buffer && d1+d2 <= lineLen+buffer){
       //println("TEST - line collision!");
       if (mousePressed){
