@@ -50,7 +50,6 @@ void setup() {
   bColour = color(45, 79, 88);
   bAltColour = color(240, 50, 10);
 
-
   lineGraph = true;
   zoom = false;
   widthASK = true;
@@ -98,9 +97,26 @@ void setup() {
     bText[i] = "";
     bSize[i] = 15;
   }
-}
+}//end of setup
 
 void draw() {
+  //switch(currentPage){
+  //  case 0:
+  //    menuPage();
+  //    break;
+  //  case 1:
+  //    incidentsPage();
+  //    break;
+  //  case 2:
+  //    fatalAccidentsPage();
+  //    break;
+  //  case 3:
+  //    fatalitiesPage();
+  //    break;
+  //  case 4:
+  //    infoPage();
+  //    break;
+  //  }
   if (currentPage == 0) {
     menuPage();
   } else if (currentPage == 1) {
@@ -128,8 +144,8 @@ void draw() {
       for (int i=0; i<table.getRowCount(); i++) {
         boolean hit = airlineAr[i].linePoint();
         boolean selected = airlineAr[i].selected;
-        airlineAr[i].legendCollision();
-        if ((hit || selected) && lineGraph) airlineAr[i].drawInfoBox(lineGraph);
+        boolean legendSelected = airlineAr[i].legendCollision();
+        if ((hit || selected || legendSelected) && lineGraph) airlineAr[i].drawInfoBox(lineGraph, legendSelected);
     }
   }
   
@@ -139,7 +155,8 @@ void draw() {
   //    Boolean hit = airlineAr[i].barCollision(i);
   //  }
   //}
-}
+  
+} //end of draw
 
 //boolean freezeLineCollision(){
 //  int count = 0;
@@ -152,61 +169,87 @@ void draw() {
 //}
 
 void mousePressed() {
-  for (int i =0; i<noofbuttons; i++) {
+  for (int i = 0; i<noofbuttons; i++) {   
     if (bHover[i] == true) {
-      if (bNPage[i] < 5) {
+      if (bNPage[i] < 5) { //if its one of the menu buttons
         currentPage = bNPage[i];
+        if (bNPage[i] == 2){
+          currentPage = 2;
+        }
         println("TEST - click, current page: ",currentPage, bNPage[i]);
+        //switch(bNPage[i]) {
+        //case 2:
+        //  currentPage = 2;
+        //  println("TEST - click, current page: ",currentPage, bNPage[i]);
+        //  break;
+        //}
       }
       else {
-        switch(bNPage[i]) {
-        case 2:
-          currentPage = 2;
-          break;
-        case 6:
-          if (lineGraph == true) {
-            lineGraph = false; //bar graph
-          } else {
-            lineGraph = true;
-          }
-          break;
-          
-        case 7:
-          if (zoom == true) {
-            zoom = false; //not zoom
-          } else {
-            zoom = true;
-          }
-          break;
-          
-        case 8:
-          //println("TEST - widthASK");
-          if (widthASK == true) {
-            widthASK = false;
-          } else {
-            widthASK = true;
-          }
-          break;
-        case 9:
-         if (selectionOnly == true) {
-            selectionOnly = false;
-          } else {
-            selectionOnly = true;
-          }
-          break;
-        case 10:
-          //println("TEST - clear button pressed");
-          for(int j =0; j< table.getRowCount();j++){
-            airlineAr[j].deselect();
-          }
-          break;
+      switch(bNPage[i]) {
+      //case 0:
+      //  currentPage = 0;
+      //  println("TEST - click, current page: ",currentPage, bNPage[i]);
+      //  break;
+      //case 1:
+      //  currentPage = 1;
+      //  break;
+      //case 2:
+      //  currentPage = 2;
+      //  println("TEST - click, current page: ",currentPage, bNPage[i]);
+      //  break;
+      //case 3:
+      //  currentPage = 3;
+      //  break;
+      case 4:
+        currentPage = 4;
+        break;
+      case 5:
+        currentPage = 5;
+        break;
+      case 6:
+        if (lineGraph == true) {
+          lineGraph = false; //bar graph
+        } else {
+          lineGraph = true;
         }
+        break;
+        
+      case 7:
+        if (zoom == true) {
+          zoom = false; //not zoom
+        } else {
+          zoom = true;
+        }
+        break;
+        
+      case 8:
+        //println("TEST - widthASK");
+        if (widthASK == true) {
+          widthASK = false;
+        } else {
+          widthASK = true;
+        }
+        break;
+      case 9:
+       if (selectionOnly == true) {
+          selectionOnly = false;
+        } else {
+          selectionOnly = true;
+        }
+        break;
+      case 10:
+        //println("TEST - clear button pressed");
+        for(int j =0; j< table.getRowCount();j++){
+          airlineAr[j].deselect();
+        }
+        break;
+      }
       }
     }
   }
 }
 
-void drawMenuButtons() {
+void drawMenuButtons() { //had to do to fix fatal accidents button from not appearing
   strokeWeight(4);
   colorMode(HSB, 360, 100, 100);
   for (int i=0; i<=3; i++) {
@@ -220,7 +263,6 @@ void drawMenuButtons() {
         fill(bColour);
         stroke(bAltColour);
       }
-
       //println("TEST - draw rectangle",i);
       rect(bX[i], bY[i], bW[i], bH[i],10);
 

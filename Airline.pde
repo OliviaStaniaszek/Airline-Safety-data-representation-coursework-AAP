@@ -155,8 +155,8 @@ class Airline {
   
   
   void drawLegend(int i, int j){
-    fill(0,0,99);
-    
+    //fill(0,0,99);
+    //stroke(1.5);
     //rect(graphLeft+100*j,(graphBase+30*i)+20,90.0,20);
     if (selected){
       fill(0,0,99);
@@ -172,15 +172,20 @@ class Airline {
     textAlign(CENTER); 
   }
   
-  void legendCollision(){
+  boolean legendCollision(){
+    //rect(legendX-45,legendY-10,90,20);
     if (mouseX < legendX + 45 && mouseX > legendX - 45){
       if (mouseY < legendY + 10 && mouseY > legendY - 10){
         //println("TEST - legend collision");
         if (mousePressed){
           selected = true;
+          selectedX = -100;//off screen
+          selectedY = -100;
+          
         }
       }
     }
+    return selected;
   }
   
   void drawBarLabel(int i){
@@ -203,7 +208,7 @@ class Airline {
     popMatrix();
   }
   
-  void drawInfoBox(Boolean lineGraph){
+  void drawInfoBox(boolean lineGraph, boolean legendSelected){
     textAlign(CENTER);
     noStroke();
     int xPos = width/2;
@@ -213,10 +218,14 @@ class Airline {
       if (mouseX <width/2) xPos = mouseX+100;
       yPos = mouseY-50;
     }
+    if (legendSelected){
+        xPos = -100;
+        yPos = -100;
+      }
     if (selected){
       xPos = selectedX;
       yPos = selectedY;
-      fill(hue,60,100,150);
+      fill(hue,60,100,150);  
     }  
     if ((selectionOnly && selected) || !selectionOnly){
       fill(hue,60,100,100);
