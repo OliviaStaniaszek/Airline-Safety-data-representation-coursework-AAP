@@ -8,10 +8,6 @@ class Airline {
   int fatal00;
   int fatalities00;
   float hue;
-  int graphBase;
-  int graphTop;
-  int graphLeft;
-  int graphRight;
 
   int topVal;
 
@@ -58,7 +54,7 @@ class Airline {
       startY = fatalities85;
       endY = fatalities00;
     }
-    startY = map(startY, 0, topVal, graphBase, graphTop);
+    startY = map(startY, 0, topVal, graphBase, graphTop); //maps position within gridbounds
     endY = map(endY, 0, topVal, graphBase, graphTop);
     if (lineHit) stroke(hue, 50, 70);
     else stroke(hue, 60, 90);
@@ -82,9 +78,7 @@ class Airline {
     //distance between mouse and ends of line
     float d1 = dist(mouseX, mouseY, startX, startY);
     float d2 = dist(mouseX, mouseY, endX, endY);
-
     float lineLen = dist(startX, startY, endX, endY); //finds lenght of line
-
     float buffer = 0.5; //higher buffer,less accuracy
     if (widthASK == false) buffer = 0.1;//more accuracy when showing thin lines
     if (d1+d2 >= lineLen-buffer && d1+d2 <= lineLen+buffer) {
@@ -100,7 +94,7 @@ class Airline {
     return false;
   }
 
-  float[] mapBar (int page, int topVal) {
+  float[] mapBar (int page, int topVal) { 
     int bar85 = 0;
     int bar00 = 0;
     if (page == 1) {
@@ -120,6 +114,7 @@ class Airline {
     bars[1] = bar2;
     return bars;
   }
+  
   void drawBar (int page, int topVal, int i) {
     float[] bars = mapBar(page, topVal);
     float bar1 = bars[0];

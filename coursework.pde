@@ -1,12 +1,11 @@
 Table table;
 int currentPage;
-int prevPage;
 color bkg;
 PFont myFont;
 
 Airline[] airlineAr = new Airline[33];
 
-//buttons
+//button variables
 int noofbuttons = 10;
 Boolean [] bHover = new Boolean[noofbuttons];
 Boolean [] bClick = new Boolean[noofbuttons];
@@ -21,15 +20,17 @@ int [] bSize = new int [noofbuttons];
 color bColour;
 color bAltColour;
 
+//graph bounds
 int graphBase;
 int graphTop;
 int graphLeft;
 int graphRight;
+
+//button booleans
 Boolean lineGraph;
 Boolean zoom;
 Boolean widthASK;
 Boolean selectionOnly;
-
 
 void setup() {
   smooth(2);
@@ -37,7 +38,6 @@ void setup() {
   textFont(myFont);
   size(1200, 800);
   currentPage = 0;
-  prevPage = 0;
   colorMode(HSB, 360, 100, 100);
   noStroke();
   textAlign(CENTER);
@@ -110,8 +110,9 @@ void draw() {
   } else if (currentPage == 4) {
     infoPage();
   }
-
-  for (int i = 0; i<noofbuttons; i++) { //button collisions
+  
+  //button collisions
+  for (int i = 0; i<noofbuttons; i++) { 
     if (mouseY < bY[i] + bH[i]/2 && mouseY > bY[i] -bH[i]/2 && mouseX < bX[i] + bW[i]/2 && mouseX > bX[i] - bW[i]/2) {
       if (bCPage[i] == currentPage) {
         bHover[i] = true;
@@ -195,15 +196,14 @@ void drawButtons(int i) {
       fill(bColour);
       stroke(bAltColour);
     }
-    rect(bX[i], bY[i], bW[i], bH[i], 10);
+    rect(bX[i], bY[i], bW[i], bH[i], 10); //box
     int offset = -5;
     if (currentPage > 0) offset = -2; 
     textAlign(CENTER, CENTER);
     if (bHover[i]) fill(bColour);
     else fill(bAltColour);
     textSize(bSize[i]);
-    text(bText[i], bX[i], bY[i]+offset);
-    fill(bAltColour);
+    text(bText[i], bX[i], bY[i]+offset); //text
   }
 }
 
@@ -261,7 +261,7 @@ void menuPage() {
   drawText("Airline Safety", 80, width/2, 200);
 }
 
-void drawGraph(int topVal) {
+void drawGraph(int topVal) { //draws graph axis, gridlines
   stroke(0, 0, 86);
   strokeWeight(1);
   line(graphLeft, graphTop, graphLeft, graphBase);
@@ -302,7 +302,7 @@ void drawGraph(int topVal) {
   textAlign(CENTER);
 }
 
-void drawData(int currentPage, int regTopVal, int altTopVal) {
+void drawData(int currentPage, int regTopVal, int altTopVal) { //creates buttons and draws graph onto pages
   bCPage[9] = currentPage; //menu button
   bNPage[9] = 0;
   bX[9] = 120;
@@ -353,7 +353,7 @@ void drawData(int currentPage, int regTopVal, int altTopVal) {
   bText[8] = "Clear";
   bSize[8] = 20;
 
-  int topVal;
+  int topVal;//top value on the graph
   for (int i=0; i<table.getRowCount(); i++) {
     if (zoom == false) {
       topVal = regTopVal;
